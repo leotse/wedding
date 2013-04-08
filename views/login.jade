@@ -1,0 +1,14 @@
+extends layout
+
+block content
+	h1 lwedding login
+	form(method="post", action="/login")
+		table
+			tr
+				td
+					input(type="text", name="email", placeholder="email")
+			tr
+				td
+					input(type="password", name="password", placeholder="password")
+				td
+					input(type="submit")

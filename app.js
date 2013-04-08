@@ -27,7 +27,12 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
+// routes
 app.get('/', routes.index);
+app.get('/login', routes.loginPage);
+app.post('/login', routes.login);
+
+// instagram routes
 app.get('/instagram/callback', instagram.verify);
 app.post('/instagram/callback', instagram.callback);
 
@@ -50,17 +55,4 @@ http.createServer(app).listen(app.get('port'), function(){
 // api.unsubscribe(function(err, res) {
 // 	if(err) console.log(err.message);
 // 	else console.log(res);
-// });
-
-// var models = require('./models')
-// ,	User = models.User;
-
-// User.create("leo", 'leo@tse.com', 'sugarman', function(err, saved) {
-// 	if(err) throw err;
-// 	else {
-// 		User.login("leo@tse.com", "sugarman", function(err, success) {
-// 			if(err) throw err;
-// 			else console.log(success);
-// 		});
-// 	}
 // });
