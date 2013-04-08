@@ -2,4 +2,10 @@ extends layout
 
 block content
 	h1 lwedding
-	p Welcome to lwedding
+	p welcome to lwedding
+	if !loggedIn 
+		p please 
+			a(href="/login") login
+	else
+		p welcome #{email} 
+			a(href="/logout") logout

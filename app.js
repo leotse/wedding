@@ -6,8 +6,11 @@
 var express = require('express')
   , routes = require('./routes')
   ,	instagram = require('./routes/instagram')
+  ,	session = require('./routes/session')
   , http = require('http')
-  , path = require('path');
+  , path = require('path')
+  ,	config = require('./config')
+  ,	MongoStore = require('connect-mongo')(express);
 
 var app = express();
 
@@ -18,6 +21,11 @@ app.set('view engine', 'jade');
 app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.bodyParser());
+app.use(express.cookieParser());
+app.use(express.session({ 
+	secret: config.cookieSecret,
+	store: new MongoStore({ url: config.db, maxAge: 3600000 })
+}));
 app.use(express.methodOverride());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
@@ -29,8 +37,9 @@ if ('development' == app.get('env')) {
 
 // routes
 app.get('/', routes.index);
-app.get('/login', routes.loginPage);
-app.post('/login', routes.login);
+app.get('/login', routes.login);
+app.post('/login', session.login);
+app.get('/logout', session.logout);
 
 // instagram routes
 app.get('/instagram/callback', instagram.verify);

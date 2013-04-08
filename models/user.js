@@ -5,7 +5,7 @@
 // libs
 var mongoose = require('mongoose')
 ,	Schema = mongoose.Schema
-,	h = require('../helpers/password');
+,	h = require('../helpers/crypto');
 
 
 var schema = new Schema({

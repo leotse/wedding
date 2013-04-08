@@ -10,6 +10,9 @@ var isProd = process.env.prod;
 if(isProd) {
 	// PROD ENV
 
+	// cookie secret
+	config.cookieSecret = "todo";
+
 	// db
 	config.db = "todo";
 
@@ -20,6 +23,9 @@ if(isProd) {
 
 } else {
 	// DEV ENV
+
+	// cookie secret
+	config.cookieSecret = "44a9fac126b730f658b3449c4ad2cea9";
 
 	// db
 	config.db = "mongodb://localhost:27017/wedding";
