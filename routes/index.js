@@ -4,11 +4,19 @@
 var routes = {};
 
 
+// libs
+var net = require('../helpers/net')
+,	auth = require('../helpers/auth')
+,	models = require('../models')
+,	Subscription = models.Subscription;
+
+
 // home page
 routes.index = function(req, res) {
+	var user = auth.user(req);
 	res.render('index', { 
 		loggedIn: req.session.loggedIn,
-		email: req.session.email
+		name: user ? user.name : null
 	});
 };
 

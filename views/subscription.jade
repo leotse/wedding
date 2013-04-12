@@ -1,0 +1,23 @@
+extends layout
+
+block content
+	h1 subscription - #{subscription.name}
+	form(method="post", action="/subscriptions/#{subscription.id}/delete")
+		input(type="submit", value="delete");
+	form(method="post", action="/subscriptions/#{subscription.id}/update")
+		table
+			tr
+				td tag
+				td 
+					input(type="text", value="#{subscription.tag}", name="tag")
+			tr
+				td name
+				td 
+					input(type="text", value="#{subscription.name}", name="name")
+			tr
+				td description
+				td
+					input(type="text", value="#{subscription.description}", name="desc")
+			tr
+				td(colspan="2", align="right")
+					input(type="submit", value="update")

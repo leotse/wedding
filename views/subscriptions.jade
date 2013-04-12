@@ -1,0 +1,34 @@
+extends layout
+
+block content
+	h1 subscriptions
+	if subscriptions.length === 0
+		p no subscriptions found
+	else
+		table
+			each subscription in subscriptions
+				tr
+					td=subscription.name
+					td
+						a(href="/subscriptions/#{subscription._id}", alt="edit") edit
+	h2 add subscription
+	form(method="post", action="/subscriptions")
+		table
+			tr
+				td
+					label(for="tag") tag
+				td
+					input(type="text", id="tag", name="tag")
+			tr
+				td
+					label(for="name") name
+				td
+					input(type="text", id="name", name="name")
+			tr
+				td
+					label(for="desc") desc
+				td
+					input(type="text", id="desc", name="desc");
+			tr
+				td(colspan="2", align="right")
+					input(type="submit")

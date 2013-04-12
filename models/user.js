@@ -44,7 +44,7 @@ schema.statics.login = function(email, password, callback) {
 	// find the user
 	UserModel.findOne()
 	.where('email', email)
-	.select('salt hash')
+	.select('name email joined salt hash')
 	.exec(function(err, user) {
 		if(err) callback(err);
 		else if(!user) callback(new Error('user not found'));
@@ -56,14 +56,18 @@ schema.statics.login = function(email, password, callback) {
 			// calculate and compare hash
 			var calcHash = h.hash(password, salt);
 			if(calcHash === hash) {
-				callback(null, true);
+				var sessionuser = {
+					_id: user._id,
+					name: user.name,
+					email: user.email
+				}
+				callback(null, sessionuser);
 			} else {
-				callback(null, false);
+				callback(null, null);
 			}
 		}
 	});
 };
-
 
 // export
 module.exports = mongoose.model('User', schema);
