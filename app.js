@@ -66,12 +66,12 @@ http.createServer(app).listen(app.get('port'), function(){
 
 
 // test instagram subscription... not working though for some reason
-// var api = require('./api/instagram');
+var api = require('./api/instagram');
 // api.listSubscriptions(function(err, res) {
 // 	if(err) console.log(err.message);
 // 	else console.log(res);
 // });
-// api.subscribe('nofilter', function(err, res) {
+// api.subscribe('troll', function(err, res) {
 // 	if(err) console.log(err.message);
 // 	else console.log(res);
 // });

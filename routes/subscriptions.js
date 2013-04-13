@@ -8,7 +8,8 @@ var routes = {};
 var async = require('async')
 ,	net = require('../helpers/net')
 ,	models = require('../models')
-,	Subscription = models.Subscription;
+,	Subscription = models.Subscription
+,	instagram = require('../api/instagram');
 
 
 // list user subscriptions
@@ -44,7 +45,18 @@ routes.add = function(req, res) {
 	,	name = body.name
 	,	desc = body.desc;
 	
-	Subscription.create(uid, tag, name, desc, function(err, created) {
+	async.waterfall([
+
+		// subscribe to instagram
+		function(done) { instagram.subscribe(tag, done); },
+
+		// and create subscription in db
+		function(data, done) { 
+			var sid = data.id;
+			Subscription.create(sid, uid, tag, name, desc, done); 
+		}
+
+	], function(err, result) {
 		if(err) net.send(err, null, res);
 		else res.redirect('/subscriptions');
 	});
@@ -60,20 +72,33 @@ routes.update = function(req, res) {
 	,	name = body.name
 	,	desc = body.desc;
 
+	var dbsub = null;
 	async.waterfall([
 
 		// find the subscription
 		function(done) { Subscription.findById(id, done); },
 
-		// then update the fields
-		function(sub, done) {
-			if(!sub) net.send(new Error('subscription not found', null, res));
-			else {
-				sub.tag = tag;
-				sub.name = name;
-				sub.description = desc;
-				sub.save(done);
+		// subscribe to instagram if tag changed
+		function(subscription, done) {
+			dbsub = subscription;
+
+			// error out if subscription is not found
+			if(!dbsub) callback(new Error('subscription not found'));
+			else if(tag.toLowerCase() === subscription.tag.toLowerCase()) {
+				// tag is not changed, just skip the instagram api call
+				done();
+			} else {
+				// tag changed! update instagram subscription
+				instagram.subscribe(tag, done);
 			}
+		},
+
+		// then update the fields
+		function(res, done) {
+			dbsub.tag = tag;
+			dbsub.name = name;
+			dbsub.description = desc;
+			dbsub.save(done);
 		}
 
 	], function(err, updated) {
@@ -88,7 +113,6 @@ routes.del = function(req, res) {
 	var params = req.params
 	,	id = params.id;
 
-	console.log('deleteing ' + id);
 	async.waterfall([
 
 		// find the subscription

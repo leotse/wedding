@@ -19,6 +19,7 @@ mongoose.connect(config, function(err) {
 // models
 models.User = require('./user');
 models.Subscription = require('./subscription');
+models.Job = require('./job');
 
 
 // export

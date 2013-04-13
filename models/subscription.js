@@ -15,19 +15,26 @@ var states = 'inactive active'.split(' ');
 // schema
 var schema = new Schema({
 
-	uid: { type: String, required: true },
-	name: { type: String, required: true },
+	sid: { type: Number, required: true }, // subscription id
+	uid: { type: ObjectId, required: true }, // user id
+	name: { type: String, required: true }, 
 	description: { type: String, required: true },
 	tag: { type: String, required: true },
-	state: { type: String, enum: states, default: 'inactive' }
+	state: { type: String, enum: states, default: 'active' }
 
 });
 
 
+// define indexes
+schema.index({ sid: 1 });
+schema.index({ uid: 1 });
+
+
 // statics
-schema.statics.create = function(uid, tag, name, desc, callback) {
+schema.statics.create = function(sid, uid, tag, name, desc, callback) {
 	var SubscriptionModel = this.model('Subscription');
 	var subscrpition = new SubscriptionModel();
+	subscrpition.sid = sid;
 	subscrpition.uid = uid;
 	subscrpition.tag = tag;
 	subscrpition.name = name;

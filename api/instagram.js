@@ -80,7 +80,13 @@ function requestAndParse(params, callback) {
 		else {
 			try {
 				var json = JSON.parse(body);
-				callback(null, json);
+
+				// verify status from instagram api
+				if(json.meta.code === 200) callback(null, json.data);
+				else {
+					var error = new Error(json.meta.code + ': ' + json.meta.error_type + ': ' + json.meta.error_message);
+					callback(error);
+				}
 			} catch(ex) {
 				callback(new Error('json parsing error: ' + ex.message));
 			}
