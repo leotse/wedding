@@ -16,7 +16,8 @@ var schema = new Schema({
 	// password stuff
 	hash: { type: String, required: true, select: false },
 	salt: { type: String, required: true, select: false }
-});
+}, { strict: true });
+
 
 // statics
 schema.statics.create = function(name, email, password, callback) {

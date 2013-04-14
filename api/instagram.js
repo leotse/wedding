@@ -12,19 +12,27 @@ var util = require('util')
 
 // constants
 var BASE_URL = "https://api.instagram.com/v1"
-,	SUBSCRIBE = "/subscriptions"
+,	SUBSCRIBE = BASE_URL + "/subscriptions"
+,	TAG_RECENT = BASE_URL + "/tags/%s/media/recent";
+
+
+// call to retreive media recently tagged
+instagram.tagRecent = function(tag, callback) {
+	var url = signRequest(util.format(TAG_RECENT, tag));
+	requestAndParse(url, callback);
+};
 
 
 // list subscriptions
 instagram.listSubscriptions = function(callback) {
-	var url = signRequest(BASE_URL + SUBSCRIBE);
+	var url = signRequest(SUBSCRIBE);
 	requestAndParse(url, callback);
 };
 
 
 // create subscription
 instagram.subscribe = function(tag, callback) {
-	var url = signRequest(BASE_URL + SUBSCRIBE)
+	var url = signRequest(SUBSCRIBE)
 	,	data = {
 			object: 'tag',
 			object_id: tag,
@@ -45,7 +53,7 @@ instagram.subscribe = function(tag, callback) {
 
 // remove all subscription
 instagram.unsubscribe = function(callback) {
-	var url = signRequest(BASE_URL + SUBSCRIBE + "?object=all")
+	var url = signRequest(SUBSCRIBE + "?object=all")
 	,	params = {
 			method: 'delete',
 			url: url

@@ -20,6 +20,7 @@ mongoose.connect(config, function(err) {
 models.User = require('./user');
 models.Subscription = require('./subscription');
 models.Job = require('./job');
+models.Picture = require('./picture');
 
 
 // export

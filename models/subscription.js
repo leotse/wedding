@@ -22,7 +22,7 @@ var schema = new Schema({
 	tag: { type: String, required: true },
 	state: { type: String, enum: states, default: 'active' }
 
-});
+}, { strict: true });
 
 
 // define indexes

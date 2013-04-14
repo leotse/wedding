@@ -1,11 +1,13 @@
 ///////////////////////////////
 // Instagram Callback Routes //
 ///////////////////////////////
-var instagram = {};
+var instagram = {}
 
 // libs
 var _ = require('underscore')
-,	config = require('../config').instagram;
+,	config = require('../config').instagram
+,	models = require('../models')
+,	Job = models.Job;
 
 
 // verifier callback
@@ -16,7 +18,6 @@ instagram.verify = function(req, res) {
 
 	// make sure the verifier matches before comfirming subscription
 	if(verifier === config.verifier) {
-		console.log(challenge);
 		res.send(challenge);
 	} else {
 		res.send(401);
@@ -26,16 +27,14 @@ instagram.verify = function(req, res) {
 
 // subscription callbcak
 instagram.callback = function(req, res) {
+	// respond to instagram api asap!
+	res.send('done');
+
 	var body = req.body
 	,	changes = body;
-
-	console.log('subscription callback:')
 	_.each(changes, function(changed) {
-		console.log(changed);
+		Job.create(changed);
 	});
-
-	// respond to instagram api
-	res.send('thanks');
 };
 
 
