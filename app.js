@@ -71,15 +71,11 @@ var api = require('./api/instagram');
 // 	if(err) throw err;
 // 	console.log(res);
 // });
-// api.subscribe('troll', function(err, res) {
+// api.subscribe('hello', function(err, res) {
 // 	if(err) throw err;
 // 	console.log(res);
 // });
 // api.unsubscribe(function(err, res) {
 // 	if(err) throw err;
 // 	console.log(res);
-// });
-// api.tagRecent('troll', function(err, res) {
-//   if(err) throw err;
-//   else console.log(res);
 // });

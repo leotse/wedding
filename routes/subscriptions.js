@@ -51,7 +51,7 @@ routes.add = function(req, res) {
 		function(done) { instagram.subscribe(tag, done); },
 
 		// and create subscription in db
-		function(data, done) { 
+		function(data, done) {
 			var sid = data.id;
 			Subscription.create(sid, uid, tag, name, desc, done); 
 		}
@@ -84,10 +84,7 @@ routes.update = function(req, res) {
 
 			// error out if subscription is not found
 			if(!dbsub) callback(new Error('subscription not found'));
-			else if(tag.toLowerCase() === subscription.tag.toLowerCase()) {
-				// tag is not changed, just skip the instagram api call
-				done();
-			} else {
+			else {
 				// tag changed! update instagram subscription
 				instagram.subscribe(tag, done);
 			}
@@ -98,6 +95,7 @@ routes.update = function(req, res) {
 			dbsub.tag = tag;
 			dbsub.name = name;
 			dbsub.description = desc;
+			dbsub.lastUpdated = Date.now();
 			dbsub.save(done);
 		}
 

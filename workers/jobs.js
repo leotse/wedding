@@ -9,12 +9,14 @@ var _ = require('underscore')
 ,	async = require('async')
 ,	models = require('../models')
 ,	Job = models.Job
+,	Subscription = models.Subscription
 ,	Picture = models.Picture
+,	SubscriptionPicture = models.SubscriptionPicture
 ,	instagram = require('../api/instagram');
 
 
 // constants
-var WORKERS = 1
+var WORKERS = 10
 ,	INITIAL_TIMEOUT = 1000
 ,	JOB_TIMEOUT = 1000;
 
@@ -51,19 +53,47 @@ function processJob(err, job) {
 		,	time = payload.time
 		,	tag = payload.object_id;
 
-		async.waterfall([
+		async.auto({
 
-			// get the images from instagram
-			function(done) { instagram.tagRecent(tag, done); },
+			// get recent from instagram
+			instagram: function(done) { instagram.tagRecent(tag, done); },
 
-			// then process and store the pictures
-			function(media, done) {
-				async.each(media, Picture.create, done);
-			}
-			
-		], function(err) {
+			// get the subscription related to this subscription
+			subscriptions: function(done) { Subscription.findBySid(sid, done); },
+
+			// push the instagram pictures to the subscriptions
+			process: [ 'instagram', 'subscriptions', function(done, results) {
+				var pictures = results.instagram.data
+				,	subscriptions = results.subscriptions;
+
+				var picDate, subscriptionDate;
+				_.each(pictures, function(picture) {
+					picDate = new Date(picture.created_time * 1000);
+					_.each(subscriptions, function(subscription) {
+						subscriptionDate = subscription.lastUpdated;
+
+						// if the subscript was last updated before the picture was tagged
+						// then push the picture to this subscription
+						async.waterfall([
+
+							// create find or create the picture
+							function(done) { Picture.findOrCreate(picture, done); },
+
+							// then push the picture to the associated subscription
+							function(picture, done) { 
+								SubscriptionPicture.findOrCreate(subscription._id, picture._id, done); 
+							}
+
+						], function(err) { if(err) console.error(err); });
+					});
+				});
+				done();
+			}]
+
+		}, function(err, results) {
 			if(err) job.error(err.message);
 			else job.complete();
+			process.nextTick(retreiveJob);
 		});
 	}
 }

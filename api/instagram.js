@@ -19,14 +19,20 @@ var BASE_URL = "https://api.instagram.com/v1"
 // call to retreive media recently tagged
 instagram.tagRecent = function(tag, callback) {
 	var url = signRequest(util.format(TAG_RECENT, tag));
-	requestAndParse(url, callback);
+	requestAndParse(url, function(err, res) {
+		if(err) callback(err);
+		else callback(null, new PagedResult(res));
+	});
 };
 
 
 // list subscriptions
 instagram.listSubscriptions = function(callback) {
 	var url = signRequest(SUBSCRIBE);
-	requestAndParse(url, callback);
+	requestAndParse(url, function(err, res) {
+		if(err) callback(err);
+		else callback(null, res.data);
+	});
 };
 
 
@@ -47,7 +53,10 @@ instagram.subscribe = function(tag, callback) {
 			url: url,
 			form: data
 		};
-	requestAndParse(params, callback);
+	requestAndParse(params, function(err, res) {
+		if(err) callback(err);
+		else callback(null, res.data);
+	});
 };
 
 
@@ -58,7 +67,10 @@ instagram.unsubscribe = function(callback) {
 			method: 'delete',
 			url: url
 		}
-	requestAndParse(params, callback);
+	requestAndParse(params, function(err, res) {
+		if(err) callback(err);
+		else callback(null, res.data);
+	});
 };
 
 
@@ -90,7 +102,7 @@ function requestAndParse(params, callback) {
 				var json = JSON.parse(body);
 
 				// verify status from instagram api
-				if(json.meta.code === 200) callback(null, json.data);
+				if(json.meta.code === 200) callback(null, json);
 				else {
 					var error = new Error(json.meta.code + ': ' + json.meta.error_type + ': ' + json.meta.error_message);
 					callback(error);
@@ -100,4 +112,9 @@ function requestAndParse(params, callback) {
 			}
 		}
 	});
+}
+
+function PagedResult(res) {
+	this.nextUrl = res.pagination.next_url;
+	this.data = res.data;
 }

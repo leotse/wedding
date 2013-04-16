@@ -1,6 +1,6 @@
-/////////////////
-// User Schema //
-/////////////////
+/////////////////////////
+// Subscription Schema //
+/////////////////////////
 
 // libs
 var mongoose = require('mongoose')
@@ -17,10 +17,11 @@ var schema = new Schema({
 
 	sid: { type: Number, required: true }, // subscription id
 	uid: { type: ObjectId, required: true }, // user id
+	tag: { type: String, required: true },
 	name: { type: String, required: true }, 
 	description: { type: String, required: true },
-	tag: { type: String, required: true },
-	state: { type: String, enum: states, default: 'active' }
+	state: { type: String, enum: states, default: 'active' },
+	lastUpdated: { type: Date, default: Date.now }
 
 }, { strict: true });
 
@@ -46,6 +47,14 @@ schema.statics.findByUid = function(uid, callback) {
 	var Subscription = this.model('Subscription');
 	Subscription.find()
 		.where('uid', uid)
+		.exec(callback);
+};
+
+schema.statics.findBySid = function(sid, callback) {
+	var Subscription = this.model('Subscription');
+	Subscription.find()
+		.where('sid', sid)
+		.sort('-lastUpdated')
 		.exec(callback);
 };
 

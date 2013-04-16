@@ -13,7 +13,7 @@ var mongoose = require('mongoose')
 // schema
 var schema = new Schema({
 
-	id: { type: String, unique: true },
+	pid: { type: String, unique: true },
 	images: {
 		s: { type: String, required: true },
 		m: { type: String, required: true },
@@ -25,18 +25,18 @@ var schema = new Schema({
 
 
 // statics
-schema.statics.create = function(doc, callback) {
+schema.statics.findOrCreate = function(doc, callback) {
 	var PictureModel = mongoose.model('Picture')
-	,	id = doc.id;
+	,	pid = doc.id;
 
 	// create the picture model if it doesn't exist
-	PictureModel.update(
-		{ id: id },
+	PictureModel.findOneAndUpdate(
+		{ pid: pid },
 		getUpdates(doc),
-		{ upsert: true },
+		{ upsert: true, new: true },
 		callback
-	);
-};
+	);	
+}
 
 
 // export
@@ -49,7 +49,7 @@ module.exports = mongoose.model('Picture', schema);
 
 function getUpdates(doc) {
 	var updates = {};
-	updates.id = doc.id;
+	updates.pid = doc.id;
 	updates.images = {
 		s: doc.images.thumbnail.url,
 		m: doc.images.low_resolution.url,
