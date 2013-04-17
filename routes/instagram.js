@@ -5,7 +5,6 @@ var instagram = {}
 
 // libs
 var _ = require('underscore')
-,	auth = require('../helpers/auth')
 ,	config = require('../config').instagram
 ,	models = require('../models')
 ,	Job = models.Job;
@@ -30,9 +29,6 @@ instagram.verify = function(req, res) {
 instagram.callback = function(req, res) {
 	// respond to instagram api asap!
 	res.send('done');
-
-	// don't keep session for instagram callback
-	auth.logout(req);
 
 	var body = req.body
 	,	changes = body;

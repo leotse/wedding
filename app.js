@@ -15,7 +15,20 @@ var express = require('express')
   , auth = require('./helpers/auth');
 
 
+// create express instance
 var app = express();
+
+
+// conditional session - turned off for instagram callack
+var sessionware = express.session({ 
+  secret: config.cookieSecret,
+  store: new MongoStore({ url: config.db, maxAge: 3600000 })
+});
+var conditionalSession = function(req, res, next) {
+  var enabled = req.url.indexOf('/instagram') < 0;
+  if(enabled) sessionware(req, res, next);
+  else next();
+};
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -25,10 +38,7 @@ app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.bodyParser());
 app.use(express.cookieParser());
-app.use(express.session({ 
-	secret: config.cookieSecret,
-	store: new MongoStore({ url: config.db, maxAge: 3600000 })
-}));
+app.use(conditionalSession);
 app.use(express.methodOverride());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
