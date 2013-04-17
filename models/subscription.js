@@ -33,7 +33,7 @@ schema.index({ uid: 1 });
 
 // statics
 schema.statics.create = function(sid, uid, tag, name, desc, callback) {
-	var SubscriptionModel = this.model('Subscription');
+	var SubscriptionModel = mongoose.model('Subscription');
 	var subscrpition = new SubscriptionModel();
 	subscrpition.sid = sid;
 	subscrpition.uid = uid;
@@ -44,19 +44,32 @@ schema.statics.create = function(sid, uid, tag, name, desc, callback) {
 };
 
 schema.statics.findByUid = function(uid, callback) {
-	var Subscription = this.model('Subscription');
+	var Subscription = mongoose.model('Subscription');
 	Subscription.find()
 		.where('uid', uid)
 		.exec(callback);
 };
 
 schema.statics.findBySid = function(sid, callback) {
-	var Subscription = this.model('Subscription');
+	var Subscription = mongoose.model('Subscription');
 	Subscription.find()
 		.where('sid', sid)
+		.where('state', 'active')
 		.sort('-lastUpdated')
 		.exec(callback);
 };
+
+
+// methods
+schema.methods.activate = function(callback) {
+	this.state = 'active';
+	this.save(callback);
+}
+
+schema.methods.deactivate = function(callback) {
+	this.state = 'inactive';
+	this.save(callback);
+}
 
 
 // export

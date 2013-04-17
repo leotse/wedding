@@ -36,7 +36,15 @@ schema.statics.findOrCreate = function(doc, callback) {
 		{ upsert: true, new: true },
 		callback
 	);	
-}
+};
+
+schema.statics.findByIds = function(ids, callback) {
+	var Picture  = mongoose.model('Picture');
+	Picture
+	.find()
+	.in('_id', ids)
+	.exec(callback);
+};
 
 
 // export

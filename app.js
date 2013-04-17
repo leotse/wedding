@@ -45,6 +45,8 @@ app.all('/subscriptions*', auth.authorize);
 app.get('/', routes.index);
 app.post('/subscriptions/:id/update', subscriptions.update);
 app.post('/subscriptions/:id/delete', subscriptions.del);
+app.post('/subscriptions/:id/activate', subscriptions.activate);
+app.post('/subscriptions/:id/deactivate', subscriptions.deactivate);
 app.get('/subscriptions/:id', subscriptions.get);
 app.post('/subscriptions', subscriptions.add);
 app.get('/subscriptions', subscriptions.index);

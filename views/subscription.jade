@@ -1,24 +1,40 @@
 extends layout
 
 block content
-	h1 subscription - #{subscription.name}
-	form(method="post", action="/subscriptions/#{subscription.id}/delete")
-		input(type="submit", value="delete");
-	form(method="post", action="/subscriptions/#{subscription.id}/update")
-		table
-			tr
-				td tag
-				td 
-					input(type="text", value="#{subscription.tag}", name="tag")
-			tr
-				td name
-				td 
-					input(type="text", value="#{subscription.name}", name="name")
-			tr
-				td description
-				td
-					textarea(name="desc", cols="50", rows="10")
-						=subscription.description
-			tr
-				td(colspan="2")
-					input(type="submit", value="update")
+	h1 #{subscription.name} - #{subscription.state}
+
+	section#edit
+		form(method="post", action="/subscriptions/#{subscription.id}/update")
+			table
+				tr
+					td tag
+					td 
+						input(type="text", value="#{subscription.tag}", name="tag")
+				tr
+					td name
+					td 
+						input(type="text", value="#{subscription.name}", name="name")
+				tr
+					td description
+					td
+						textarea(name="desc", cols="50", rows="10")
+							=subscription.description
+				tr
+					td(colspan="2")
+						input(type="submit", value="update")
+
+		form(method="post", action="/subscriptions/#{subscription.id}/delete")
+			input(type="submit", value="delete");
+
+		if subscription.state === 'active'
+			form(method="post", action="/subscriptions/#{subscription.id}/deactivate")
+				input(type="submit", value="deactivate");
+		else 
+			form(method="post", action="/subscriptions/#{subscription.id}/activate")
+				input(type="submit", value="activate");
+
+	section#pictures
+		ul
+			each picture in pictures
+				li
+					img(alt='instagram', src=picture.images.s)

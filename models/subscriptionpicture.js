@@ -3,7 +3,9 @@
 /////////////////////////////////
 
 // libs
-var mongoose = require('mongoose')
+var _ = require('underscore')
+,	async = require('async')
+,	mongoose = require('mongoose')
 ,	Schema = mongoose.Schema
 ,	ObjectId = Schema.ObjectId;
 
@@ -28,6 +30,29 @@ schema.statics.findOrCreate = function(sid, pid, callback) {
 		{ upsert: true, new: true },
 		callback
 	);	
+};
+
+schema.statics.findBySid = function(sid, callback) {
+	var SubscriptionPicture = mongoose.model('SubscriptionPicture')
+	,	Picture = mongoose.model('Picture'); 
+
+	async.waterfall([
+
+		// get the picture ids
+		function(done) { 
+			SubscriptionPicture
+			.find()
+			.where('sid', sid)
+			.exec(done);
+		},
+
+		// then the actual pictures!
+		function(subscriptionPics, done) {
+			var pids = _.pluck(subscriptionPics, 'pid');
+			Picture.findByIds(pids, done);
+		}
+
+	], callback);
 };
 
 

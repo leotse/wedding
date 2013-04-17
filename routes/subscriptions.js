@@ -9,6 +9,7 @@ var async = require('async')
 ,	net = require('../helpers/net')
 ,	models = require('../models')
 ,	Subscription = models.Subscription
+,	SubscriptionPicture = models.SubscriptionPicture
 ,	instagram = require('../api/instagram');
 
 
@@ -29,9 +30,25 @@ routes.index = function(req, res) {
 routes.get = function(req, res) {
 	var params = req.params
 	,	id = params.id;
-	Subscription.findById(id, function(err, sub) {
+
+	async.parallel([
+
+		// get the subscrption
+		function(done) { Subscription.findById(id, done); },
+
+		// get all the pictures associated with the subscription
+		function(done) { SubscriptionPicture.findBySid(id, done); }
+
+	], function(err, results) {
 		if(err) net.send(err, null, res);
-		else res.render('subscription', { subscription: sub });
+		else {
+			var subscription = results[0]
+			,	pictures = results[1];
+			res.render('subscription', { 
+				subscription: subscription,
+				pictures: pictures
+			});
+		}
 	});
 };
 
@@ -127,6 +144,39 @@ routes.del = function(req, res) {
 		else res.redirect('/subscriptions');
 	});
 };
+
+
+// activates a subscription
+routes.activate = function(req, res) {
+	var params = req.params
+	,	id = params.id;
+	async.waterfall([
+
+		function(done) { Subscription.findById(id, done); },
+		function(subscription, done) { subscription.activate(done); },
+
+	], function(err, saved) {
+		if(err) net.send(err, null, res);
+		else res.redirect('/subscriptions/' + id);
+	});
+};
+
+
+// deactivates a subscription
+routes.deactivate = function(req, res) {
+	var params = req.params
+	,	id = params.id;
+	async.waterfall([
+
+		function(done) { Subscription.findById(id, done); },
+		function(subscription, done) { subscription.deactivate(done); },
+
+	], function(err, saved) {
+		if(err) net.send(err, null, res);
+		else res.redirect('/subscriptions/' + id);
+	});
+};
+
 
 
 module.exports = routes;
